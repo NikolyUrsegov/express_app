@@ -1,4 +1,13 @@
-import { ValueOf } from '../types'
+export enum FIELDS_VIDEOS {
+  ID = 'id',
+  TITLE = 'title',
+  AUTHOR = 'author',
+  CAN_BE_DOWNLOADED = 'canBeDownloaded',
+  MIN_AGE_RESTRICTION = 'minAgeRestriction',
+  CREATE_AT = 'createdAt',
+  PUBLICATION_DATE = 'publicationDate',
+  AVAILABLE_RESOLUTIONS = 'availableResolutions',
+}
 
 export interface IVideo {
   id: number

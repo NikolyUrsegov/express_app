@@ -3,6 +3,7 @@ import cors from 'cors'
 import { SETTINGS } from './settings'
 import { videosRouter } from './videos/controller'
 import { db } from './db/db'
+import { CodeResponsesEnum } from './common/constants'
 
 export const app = express()
 app.use(express.json())
@@ -14,7 +15,7 @@ app.get(SETTINGS.PATH.ROOT, (_, res) => {
 
 app.delete(SETTINGS.PATH.CLEAR_ALL_DATA, (_, res) => {
   db.clear()
-  res.status(204)
+  res.status(CodeResponsesEnum.NO_CONTENT).send()
 })
 
 app.use(SETTINGS.PATH.VIDEOS, videosRouter)
