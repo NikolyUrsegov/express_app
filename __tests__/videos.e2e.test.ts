@@ -30,7 +30,6 @@ describe('/videos', () => {
         errorsMessages: [
           { message: 'title is required', field: 'title' },
           { message: 'author is required', field: 'author' },
-          { message: 'availableResolution is required', field: 'availableResolution' },
         ],
       })
 
@@ -62,18 +61,24 @@ describe('/videos', () => {
     await req
       .put(`${SETTINGS.PATH.VIDEOS}/${video1.id}`)
       .send({
-        title: 'hello title',
-        author: 'hello author',
-        publicationDate: '2023-01-12T08:12:39.261Z',
+        title: 'some title updated',
+        author: 'some author updated',
+        availableResolutions: ['P144', 'P2160', 'P720'],
+        canBeDownloaded: true,
+        minAgeRestriction: 16,
+        publicationDate: '2024-10-19T13:12:08.149Z',
       })
       .expect(CodeResponsesEnum.NO_CONTENT)
 
     const res = await req.get(SETTINGS.PATH.VIDEOS)
     expect(res.body[0]).toEqual({
       ...video1,
-      title: 'hello title',
-      author: 'hello author',
-      publicationDate: '2023-01-12T08:12:39.261Z',
+      title: 'some title updated',
+      author: 'some author updated',
+      availableResolutions: ['P144', 'P2160', 'P720'],
+      canBeDownloaded: true,
+      minAgeRestriction: 16,
+      publicationDate: '2024-10-19T13:12:08.149Z',
     })
   })
 
