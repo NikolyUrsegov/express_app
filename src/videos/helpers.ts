@@ -1,22 +1,8 @@
+import { anyCheckFields, isDateIsoString } from '../common/helpers'
 import { AvailableResolutions, FIELDS_VIDEOS, IVideo, OutputErrorsType } from './types'
 
 const MAX_LENGTH_TITLE = 40
 const MAX_LENGTH_AUTHOR = 20
-const isoDatePattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/
-
-const anyCheckFields = <F extends string[]>(
-  checkedFields: string[],
-  validField: F
-): string[] | null => {
-  const anyFields = checkedFields.reduce<string[]>((acc, el) => {
-    if (!validField.includes(el)) {
-      acc.push(el)
-    }
-    return acc
-  }, [])
-
-  return anyFields.length ? anyFields : null
-}
 
 const titleValidate = (errors: OutputErrorsType, title?: string) => {
   if (!title?.length || title?.length > MAX_LENGTH_TITLE) {
@@ -76,7 +62,7 @@ const publicationDateValidate = (
   errors: OutputErrorsType,
   publicationDate: IVideo['publicationDate']
 ) => {
-  if (!isoDatePattern.test(publicationDate)) {
+  if (!isDateIsoString(publicationDate)) {
     errors.errorsMessages.push({
       message: 'error',
       field: FIELDS_VIDEOS.PUBLICATION_DATE,
@@ -155,16 +141,4 @@ export const videoInputAvailableResolutions = (
     })
   }
   return errors
-}
-
-export const createDateToIsoString = (initialDate?: string, daysToAdd: number = 0) => {
-  const date = initialDate ? new Date(initialDate) : new Date()
-
-  date.setDate(date.getDate() + daysToAdd)
-
-  return date.toISOString()
-}
-
-export const createIdNumber = () => {
-  return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
 }

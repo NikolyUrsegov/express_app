@@ -2,13 +2,9 @@ import { Router } from 'express'
 import type { Request, Response } from 'express'
 import type { IVideo, OutputErrorsType } from './types'
 import { db } from '../db/db'
-import {
-  changeVideoValidate,
-  createDateToIsoString,
-  createIdNumber,
-  createVideoValidate,
-} from './helpers'
+import { changeVideoValidate, createVideoValidate } from './helpers'
 import { CodeResponsesEnum } from '../common/constants'
+import { createDateToIsoString, createIdNumber } from '../common/helpers'
 
 export const videosRouter = Router()
 
