@@ -4,6 +4,9 @@ import { SETTINGS } from './settings'
 import { videosRouter } from './videos/controller'
 import { db } from './db/db'
 import { CodeResponsesEnum } from './common/constants'
+import { blogsRouter } from './blogs/controller'
+import { errorHandlerMiddleware } from './base-middlewares/errors'
+import { postsRouter } from './posts/controller'
 
 export const app = express()
 app.use(express.json())
@@ -19,3 +22,9 @@ app.delete(SETTINGS.PATH.CLEAR_ALL_DATA, (_, res) => {
 })
 
 app.use(SETTINGS.PATH.VIDEOS, videosRouter)
+
+app.use(SETTINGS.PATH.BLOGS, blogsRouter)
+
+app.use(SETTINGS.PATH.POSTS, postsRouter)
+
+app.use(errorHandlerMiddleware)

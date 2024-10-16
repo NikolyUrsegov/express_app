@@ -1,5 +1,5 @@
 import { DBType } from '../src/db/db'
-import { createIdNumber } from '../src/videos/helpers'
+import { createIdNumber } from '../src/common/helpers'
 import { AvailableResolutions, IVideo } from '../src/videos/types'
 
 // готовые данные для переиспользования в тестах
