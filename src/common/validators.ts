@@ -13,8 +13,12 @@ export const stringRequiredValidator = (field: string, options: MinMaxOptions) =
     .isLength(options)
     .withMessage(`more then ${options.min ?? 0} or ${options.max}`)
 
-export const regexValidator = (field: string, pattern: RegExp | string) =>
-  body(field).matches(pattern)
+export const regexValidator = (field: string, pattern: RegExp | string, options: MinMaxOptions) =>
+  body(field)
+    .matches(pattern)
+    .withMessage(`${field} has not been verified`)
+    .isLength(options)
+    .withMessage(`more then ${options.min ?? 0} or ${options.max}`)
 
 export const hasEntityByIdParamValidator =
   <R extends Record<string, unknown>>(param: string, repository: Entities<R>) =>
