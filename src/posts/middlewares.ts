@@ -1,6 +1,6 @@
 import { authMiddleware } from '../base-middlewares/auth'
 import { PostsRepository } from './repository'
-import { body } from 'express-validator'
+import { body, checkExact } from 'express-validator'
 import { BlogsRepository } from '../blogs/repository'
 import {
   hasEntityByIdParamValidator,
@@ -20,20 +20,24 @@ export const isBlogValidator = body('blogId').custom((id: string) => {
 
 export const createPostMiddlewares = [
   authMiddleware,
-  isBlogValidator,
-  stringRequiredValidator('title', { min: 1, max: 30 }),
-  stringRequiredValidator('shortDescription', { min: 1, max: 100 }),
-  stringRequiredValidator('content', { min: 1, max: 1000 }),
+  checkExact([
+    isBlogValidator,
+    stringRequiredValidator('title', { min: 1, max: 30 }),
+    stringRequiredValidator('shortDescription', { min: 1, max: 100 }),
+    stringRequiredValidator('content', { min: 1, max: 1000 }),
+  ]),
   validationErrorHandler,
 ]
 
 export const changePostMiddlewares = [
   authMiddleware,
   isPostCustomValidator,
-  isBlogValidator,
-  stringRequiredValidator('title', { min: 1, max: 30 }),
-  stringRequiredValidator('shortDescription', { min: 1, max: 100 }),
-  stringRequiredValidator('content', { min: 1, max: 1000 }),
+  checkExact([
+    isBlogValidator,
+    stringRequiredValidator('title', { min: 1, max: 30 }),
+    stringRequiredValidator('shortDescription', { min: 1, max: 100 }),
+    stringRequiredValidator('content', { min: 1, max: 1000 }),
+  ]),
   validationErrorHandler,
 ]
 
