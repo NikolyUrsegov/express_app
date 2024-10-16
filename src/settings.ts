@@ -3,6 +3,8 @@ export const SETTINGS = {
   PATH: {
     ROOT: '/',
     VIDEOS: '/videos',
+    BLOGS: '/blogs',
+    POSTS: '/posts',
     CLEAR_ALL_DATA: '/testing/all-data',
   },
 }

@@ -1,3 +1,5 @@
+export const regexHttps = '^https://([a-zA-Z0-9_-]+.)+[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*/?$'
+
 export enum CodeResponsesEnum {
   OK = 200, // Успешно
   CREATED = 201, // Успешно создано
