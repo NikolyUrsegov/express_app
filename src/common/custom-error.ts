@@ -1,4 +1,4 @@
-import { validationResult } from 'express-validator'
+import { FieldValidationError, UnknownFieldsError, validationResult } from 'express-validator'
 import { CodeResponsesEnum } from './constants'
 import type { Request } from 'express'
 
@@ -21,12 +21,26 @@ export const handlerErrors = (req: Request, onlyFirstError: boolean = true) => {
     return null
   }
 
-  const errorList = (originalErrors.array({ onlyFirstError }) as Record<string, string>[]).map(
-    (x) => ({
-      field: x.path,
-      message: x.msg,
-    })
-  )
+  const errorList = originalErrors.array({ onlyFirstError }).flatMap((error) => {
+    if (error.type === 'unknown_fields') {
+      return error.fields.map((field) => ({
+        field: field.path,
+        message: `Unknown field`,
+      }))
+    }
+
+    if (error.type === 'field') {
+      return {
+        field: error.path,
+        message: error.msg,
+      }
+    }
+
+    return {
+      field: undefined,
+      message: error.msg,
+    }
+  })
 
   return {
     originalErrors,
