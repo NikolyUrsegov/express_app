@@ -12,18 +12,18 @@ export const idBlogCustomValidator = hasEntityByIdParamValidator('id', BlogsRepo
 
 export const createBlogMiddlewares = [
   authMiddleware,
-  stringRequiredValidator('name', { max: 15 }),
-  stringRequiredValidator('description', { max: 500 }),
-  regexValidator('websiteUrl', regexHttps),
+  stringRequiredValidator('name', { min: 1, max: 15 }),
+  stringRequiredValidator('description', { min: 1, max: 500 }),
+  regexValidator('websiteUrl', regexHttps, { max: 100 }),
   validationErrorHandler,
 ]
 
 export const changeBlogMiddlewares = [
   authMiddleware,
   idBlogCustomValidator,
-  stringRequiredValidator('name', { max: 15 }),
-  stringRequiredValidator('description', { max: 500 }),
-  regexValidator('websiteUrl', regexHttps),
+  stringRequiredValidator('name', { min: 1, max: 15 }),
+  stringRequiredValidator('description', { min: 1, max: 500 }),
+  regexValidator('websiteUrl', regexHttps, { max: 100 }),
   validationErrorHandler,
 ]
 
