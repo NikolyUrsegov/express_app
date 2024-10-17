@@ -1,5 +1,5 @@
-import { IBlogModel } from '../blogs/types'
-import { IPostModel } from '../posts/types'
+import type { IBlogModel } from '../blogs/types'
+import type { IPostModel } from '../posts/types'
 import type { IVideo } from '../videos/types'
 
 export type DBType = {
@@ -34,7 +34,7 @@ export const db: DBType = {
   },
   clear() {
     this.videos = {}
-  },
+  }
 }
 
 export class Entities<T extends Record<string, unknown>> {

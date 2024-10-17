@@ -3,7 +3,7 @@ import { v1 as uuidv1 } from 'uuid'
 
 import type { DBType } from '../db/db'
 import type { IPostModel } from './types'
-import { IBlogModel } from '../blogs/types'
+import type { IBlogModel } from '../blogs/types'
 import { BlogsRepository } from '../blogs/repository'
 
 class Repository extends Entities<DBType['posts']> {

@@ -13,7 +13,7 @@ const videosControllers = {
     res.status(CodeResponsesEnum.OK).json(Object.values(db.videos))
   },
   post: (
-    req: Request<any, any, Pick<IVideo, 'author' | 'title' | 'availableResolutions'>>,
+    req: Request<unknown, unknown, Pick<IVideo, 'author' | 'title' | 'availableResolutions'>>,
     res: Response<IVideo | OutputErrorsType>
   ) => {
     const { errorsMessages } = createVideoValidate(req.body)
@@ -33,7 +33,7 @@ const videosControllers = {
       createdAt: nowDate,
       publicationDate: createDateToIsoString(nowDate, 1),
       canBeDownloaded: false,
-      minAgeRestriction: null,
+      minAgeRestriction: null
     }
     db.videos = { ...db.videos, [newVideo.id]: newVideo }
 
@@ -57,7 +57,7 @@ const videosControllers = {
 
     res.status(CodeResponsesEnum.OK).json(video)
   },
-  putVideo: (req: Request<{ id: string }, any, IVideo>, res: Response<void | OutputErrorsType>) => {
+  putVideo: (req: Request<{ id: string }, unknown, IVideo>, res: Response<void | OutputErrorsType>) => {
     const { id } = req.params
     const videoId = Number(id)
 
@@ -84,7 +84,7 @@ const videosControllers = {
 
     res.status(CodeResponsesEnum.NO_CONTENT).send()
   },
-  deleteVideo: (req: Request<{ id: string }, any, IVideo>, res: Response<void>) => {
+  deleteVideo: (req: Request<{ id: string }, unknown, IVideo>, res: Response<void>) => {
     const { id } = req.params
     const videoId = Number(id)
 
@@ -103,7 +103,7 @@ const videosControllers = {
     delete db.videos[videoId]
 
     res.status(CodeResponsesEnum.NO_CONTENT).send()
-  },
+  }
 }
 
 videosRouter.get('/', videosControllers.get)

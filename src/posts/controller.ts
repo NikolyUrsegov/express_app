@@ -1,14 +1,14 @@
 import { Router } from 'express'
 import type { Request, Response } from 'express'
 import { CodeResponsesEnum } from '../common/constants'
-import { IPostModel } from './types'
+import type { IPostModel } from './types'
 import { PostsRepository } from './repository'
 import { BlogsRepository } from '../blogs/repository'
 import {
   changePostMiddlewares,
   createPostMiddlewares,
   deletePostMiddlewares,
-  getPostMiddlewares,
+  getPostMiddlewares 
 } from './middlewares'
 
 export const postsRouter = Router()
@@ -18,7 +18,7 @@ const postsControllers = {
     res.status(CodeResponsesEnum.OK).send(PostsRepository.getPostsList())
   },
   post: (
-    req: Request<any, any, Omit<IPostModel, 'blogName' | 'id'>>,
+    req: Request<unknown, unknown, Omit<IPostModel, 'blogName' | 'id'>>,
     res: Response<IPostModel>
   ) => {
     const blog = BlogsRepository.getBlog(req.body.blogId)
@@ -32,12 +32,13 @@ const postsControllers = {
     res.status(CodeResponsesEnum.OK).json(PostsRepository.getPost(id))
   },
   putPost: (
-    req: Request<{ id: string }, any, Omit<IPostModel, 'blogName' | 'id'>>,
+    req: Request<{ id: string }, unknown, Omit<IPostModel, 'blogName' | 'id'>>,
     res: Response<void>
   ) => {
     const { id } = req.params
 
-    PostsRepository.changePost({ ...req.body, id })
+    PostsRepository.changePost({ ...req.body,
+      id })
 
     res.status(CodeResponsesEnum.NO_CONTENT).send()
   },
@@ -47,7 +48,7 @@ const postsControllers = {
     PostsRepository.deletePost(id)
 
     res.status(CodeResponsesEnum.NO_CONTENT).send()
-  },
+  }
 }
 
 postsRouter.get('/', postsControllers.get)
