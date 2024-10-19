@@ -20,6 +20,7 @@ const videosControllers = {
 
     if (errorsMessages.length) {
       res.status(CodeResponsesEnum.BAD_REQUEST).json({ errorsMessages })
+
       return
     }
 
@@ -33,7 +34,7 @@ const videosControllers = {
       createdAt: nowDate,
       publicationDate: createDateToIsoString(nowDate, 1),
       canBeDownloaded: false,
-      minAgeRestriction: null,
+      minAgeRestriction: null
     }
     db.videos = { ...db.videos, [newVideo.id]: newVideo }
 
@@ -45,6 +46,7 @@ const videosControllers = {
 
     if (isNaN(videoId)) {
       res.status(CodeResponsesEnum.BAD_REQUEST).send()
+
       return
     }
 
@@ -52,6 +54,7 @@ const videosControllers = {
 
     if (!video) {
       res.status(CodeResponsesEnum.NOT_FOUND).send()
+
       return
     }
 
@@ -63,6 +66,7 @@ const videosControllers = {
 
     if (isNaN(videoId)) {
       res.status(CodeResponsesEnum.NOT_FOUND).send()
+
       return
     }
 
@@ -70,6 +74,7 @@ const videosControllers = {
 
     if (errorsMessages.length) {
       res.status(CodeResponsesEnum.BAD_REQUEST).json({ errorsMessages })
+
       return
     }
 
@@ -77,6 +82,7 @@ const videosControllers = {
 
     if (!video) {
       res.status(CodeResponsesEnum.NOT_FOUND).send()
+
       return
     }
 
@@ -90,6 +96,7 @@ const videosControllers = {
 
     if (isNaN(videoId)) {
       res.status(CodeResponsesEnum.NOT_FOUND).send()
+
       return
     }
 
@@ -97,13 +104,14 @@ const videosControllers = {
 
     if (!video) {
       res.status(CodeResponsesEnum.NOT_FOUND).send()
+
       return
     }
 
     delete db.videos[videoId]
 
     res.status(CodeResponsesEnum.NO_CONTENT).send()
-  },
+  }
 }
 
 videosRouter.get('/', videosControllers.get)

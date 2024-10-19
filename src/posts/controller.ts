@@ -1,14 +1,14 @@
 import { Router } from 'express'
 import type { Request, Response } from 'express'
 import { CodeResponsesEnum } from '../common/constants'
-import { IPostModel } from './types'
+import type { IPostModel } from './types'
 import { PostsRepository } from './repository'
 import { BlogsRepository } from '../blogs/repository'
 import {
   changePostMiddlewares,
   createPostMiddlewares,
   deletePostMiddlewares,
-  getPostMiddlewares,
+  getPostMiddlewares
 } from './middlewares'
 
 export const postsRouter = Router()
@@ -47,7 +47,7 @@ const postsControllers = {
     PostsRepository.deletePost(id)
 
     res.status(CodeResponsesEnum.NO_CONTENT).send()
-  },
+  }
 }
 
 postsRouter.get('/', postsControllers.get)

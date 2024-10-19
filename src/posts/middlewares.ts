@@ -5,7 +5,7 @@ import { BlogsRepository } from '../blogs/repository'
 import {
   hasEntityByIdParamValidator,
   stringRequiredValidator,
-  validationErrorHandler,
+  validationErrorHandler
 } from '../common/validators'
 
 export const isPostCustomValidator = hasEntityByIdParamValidator('id', PostsRepository)
@@ -15,6 +15,7 @@ export const isBlogValidator = body('blogId').custom((id: string) => {
   if (!blogExists) {
     throw new Error('BlogId is not found')
   }
+
   return true
 })
 
@@ -24,9 +25,9 @@ export const createPostMiddlewares = [
     isBlogValidator,
     stringRequiredValidator('title', { min: 1, max: 30 }),
     stringRequiredValidator('shortDescription', { min: 1, max: 100 }),
-    stringRequiredValidator('content', { min: 1, max: 1000 }),
+    stringRequiredValidator('content', { min: 1, max: 1000 })
   ]),
-  validationErrorHandler,
+  validationErrorHandler
 ]
 
 export const changePostMiddlewares = [
@@ -36,9 +37,9 @@ export const changePostMiddlewares = [
     isBlogValidator,
     stringRequiredValidator('title', { min: 1, max: 30 }),
     stringRequiredValidator('shortDescription', { min: 1, max: 100 }),
-    stringRequiredValidator('content', { min: 1, max: 1000 }),
+    stringRequiredValidator('content', { min: 1, max: 1000 })
   ]),
-  validationErrorHandler,
+  validationErrorHandler
 ]
 
 export const getPostMiddlewares = [isPostCustomValidator]

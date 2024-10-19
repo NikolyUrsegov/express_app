@@ -8,6 +8,7 @@ export const anyCheckFields = <F extends string[]>(
     if (!validField.includes(el)) {
       acc.push(el)
     }
+
     return acc
   }, [])
 
