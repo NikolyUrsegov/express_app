@@ -1,6 +1,7 @@
-import { DBType } from '../src/db/db'
+import type { DBType } from '../src/db/db'
 import { createIdNumber } from '../src/common/helpers'
-import { AvailableResolutions, IVideo } from '../src/videos/types'
+import type { IVideo } from '../src/videos/types'
+import { AvailableResolutions } from '../src/videos/types'
 
 // готовые данные для переиспользования в тестах
 
@@ -12,11 +13,11 @@ export const video1: IVideo = {
   minAgeRestriction: null,
   createdAt: new Date().toISOString(),
   publicationDate: new Date().toISOString(),
-  availableResolutions: [AvailableResolutions.P1080],
+  availableResolutions: [AvailableResolutions.P1080]
 }
 
 export const dataset1: Pick<DBType, 'videos'> = {
   videos: {
-    [video1.id]: { ...video1 },
-  },
+    [video1.id]: { ...video1 }
+  }
 }

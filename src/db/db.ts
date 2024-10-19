@@ -1,5 +1,5 @@
-import { IBlogModel } from '../blogs/types'
-import { IPostModel } from '../posts/types'
+import type { IBlogModel } from '../blogs/types'
+import type { IPostModel } from '../posts/types'
 import type { IVideo } from '../videos/types'
 
 export type DBType = {
@@ -19,22 +19,25 @@ export const db: DBType = {
 
     if (videos) {
       this.videos = videos
+
       return
     }
 
     if (blogs) {
       this.blogs = blogs
+
       return
     }
 
     if (posts) {
       this.posts = posts
+
       return
     }
   },
   clear() {
     this.videos = {}
-  },
+  }
 }
 
 export class Entities<T extends Record<string, unknown>> {

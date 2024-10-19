@@ -5,6 +5,6 @@ export const SETTINGS = {
     VIDEOS: '/videos',
     BLOGS: '/blogs',
     POSTS: '/posts',
-    CLEAR_ALL_DATA: '/testing/all-data',
-  },
+    CLEAR_ALL_DATA: '/testing/all-data'
+  }
 }

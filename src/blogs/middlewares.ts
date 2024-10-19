@@ -5,7 +5,7 @@ import {
   hasEntityByIdParamValidator,
   regexValidator,
   stringRequiredValidator,
-  validationErrorHandler,
+  validationErrorHandler
 } from '../common/validators'
 import { BlogsRepository } from './repository'
 
@@ -16,9 +16,9 @@ export const createBlogMiddlewares = [
   checkExact([
     stringRequiredValidator('name', { min: 1, max: 15 }),
     stringRequiredValidator('description', { min: 1, max: 500 }),
-    regexValidator('websiteUrl', regexHttps, { max: 100 }),
+    regexValidator('websiteUrl', regexHttps, { max: 100 })
   ]),
-  validationErrorHandler,
+  validationErrorHandler
 ]
 
 export const changeBlogMiddlewares = [
@@ -27,9 +27,9 @@ export const changeBlogMiddlewares = [
   checkExact([
     stringRequiredValidator('name', { min: 1, max: 15 }),
     stringRequiredValidator('description', { min: 1, max: 500 }),
-    regexValidator('websiteUrl', regexHttps, { max: 100 }),
+    regexValidator('websiteUrl', regexHttps, { max: 100 })
   ]),
-  validationErrorHandler,
+  validationErrorHandler
 ]
 
 export const getBlogMiddlewares = [idBlogCustomValidator]

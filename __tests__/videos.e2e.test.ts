@@ -29,8 +29,8 @@ describe('/videos', () => {
       .expect(CodeResponsesEnum.BAD_REQUEST, {
         errorsMessages: [
           { message: 'title is required', field: 'title' },
-          { message: 'author is required', field: 'author' },
-        ],
+          { message: 'author is required', field: 'author' }
+        ]
       })
 
     const res = await req.get(SETTINGS.PATH.VIDEOS)
@@ -66,7 +66,7 @@ describe('/videos', () => {
         availableResolutions: ['P144', 'P2160', 'P720'],
         canBeDownloaded: true,
         minAgeRestriction: 16,
-        publicationDate: '2024-10-19T13:12:08.149Z',
+        publicationDate: '2024-10-19T13:12:08.149Z'
       })
       .expect(CodeResponsesEnum.NO_CONTENT)
 
@@ -78,13 +78,13 @@ describe('/videos', () => {
       availableResolutions: ['P144', 'P2160', 'P720'],
       canBeDownloaded: true,
       minAgeRestriction: 16,
-      publicationDate: '2024-10-19T13:12:08.149Z',
+      publicationDate: '2024-10-19T13:12:08.149Z'
     })
   })
 
   it('- DELETE product by incorrect ID', async () => {
     db.clear()
-    db.setDB({ videos: { [video1.id]: video1 } })
+    db.setDB({ videos: { [video1.id]: video1 }})
     await req.delete(`${SETTINGS.PATH.VIDEOS}/12232121`).expect(CodeResponsesEnum.NOT_FOUND)
 
     const res = await req.get('/videos/')

@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express'
+import type { NextFunction, Request, Response } from 'express'
 import { CodeResponsesEnum } from '../common/constants'
 import { CustomError } from '../common/custom-error'
 

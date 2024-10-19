@@ -3,7 +3,7 @@ import { v1 as uuidv1 } from 'uuid'
 
 import type { DBType } from '../db/db'
 import type { IPostModel } from './types'
-import { IBlogModel } from '../blogs/types'
+import type { IBlogModel } from '../blogs/types'
 import { BlogsRepository } from '../blogs/repository'
 
 class Repository extends Entities<DBType['posts']> {
@@ -23,7 +23,9 @@ class Repository extends Entities<DBType['posts']> {
     { name: blogName }: IBlogModel
   ): IPostModel {
     const id = uuidv1()
-    const newPost = { ...post, id, blogName }
+    const newPost = {
+      ...post, id, blogName
+    }
 
     this.entities[id] = newPost
 
@@ -38,12 +40,15 @@ class Repository extends Entities<DBType['posts']> {
 
     if (post.blogId === prevPost.blogId) {
       this.entities[post.id] = { ...prevPost, ...post }
+
       return
     }
 
     const { id: blogName } = BlogsRepository.getBlog(post.blogId)
 
-    this.entities[post.id] = { ...prevPost, ...post, blogName }
+    this.entities[post.id] = {
+      ...prevPost, ...post, blogName
+    }
   }
 
   public deletePost(id: string) {
