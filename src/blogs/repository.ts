@@ -1,11 +1,11 @@
 import { db, Entities } from '../db/db'
 import { v1 as uuidv1 } from 'uuid'
 
-import type { DBType } from '../db/db'
+import type { DB } from '../db/db'
 import type { IBlogModel } from './types'
 
-class Repository extends Entities<DBType['blogs']> {
-  constructor(db: DBType) {
+class Repository extends Entities<DB['blogs']> {
+  constructor(db: DB) {
     super(db.blogs)
   }
 

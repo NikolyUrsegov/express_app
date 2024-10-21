@@ -6,24 +6,24 @@ import { CodeResponsesEnum } from '../src/common/constants'
 
 describe('/videos', () => {
   beforeEach(async () => {
-    db.clear()
+    db.clearAll()
     db.setDB(dataset1)
   })
 
   it('should get empty array', async () => {
-    db.clear()
-    const res = await req.get(SETTINGS.PATH.VIDEOS).expect(CodeResponsesEnum.OK)
+    db.clearAll()
+    const res = await req.unAuthorizedRequest.get(SETTINGS.PATH.VIDEOS).expect(CodeResponsesEnum.OK)
 
     expect(res.body.length).toBe(0)
   })
   it('should get not empty array', async () => {
-    const res = await req.get(SETTINGS.PATH.VIDEOS).expect(CodeResponsesEnum.OK)
+    const res = await req.unAuthorizedRequest.get(SETTINGS.PATH.VIDEOS).expect(CodeResponsesEnum.OK)
 
     expect(res.body.length).toBe(1)
     expect(res.body[0]).toEqual(video1)
   })
   it('- POST does not create the video with incorrect data (no title, no author)', async () => {
-    await req
+    await req.unAuthorizedRequest
       .post(SETTINGS.PATH.VIDEOS)
       .send({ title: '', author: '' })
       .expect(CodeResponsesEnum.BAD_REQUEST, {
@@ -33,32 +33,32 @@ describe('/videos', () => {
         ]
       })
 
-    const res = await req.get(SETTINGS.PATH.VIDEOS)
+    const res = await req.unAuthorizedRequest.get(SETTINGS.PATH.VIDEOS)
     expect(res.body).toEqual(Object.values(dataset1.videos))
   })
 
   it('- GET product by ID with incorrect id', async () => {
-    await req.get(`${SETTINGS.PATH.VIDEOS}/helloWorld`).expect(CodeResponsesEnum.BAD_REQUEST)
+    await req.unAuthorizedRequest.get(`${SETTINGS.PATH.VIDEOS}/helloWorld`).expect(CodeResponsesEnum.BAD_REQUEST)
   })
   it('+ GET product by ID with correct id', async () => {
-    await req.get(`${SETTINGS.PATH.VIDEOS}/${video1.id}`).expect(CodeResponsesEnum.OK, video1)
+    await req.unAuthorizedRequest.get(`${SETTINGS.PATH.VIDEOS}/${video1.id}`).expect(CodeResponsesEnum.OK, video1)
   })
 
   it('- PUT product by ID with incorrect data', async () => {
     db.setDB(dataset1)
-    await req
+    await req.unAuthorizedRequest
       .put(`${SETTINGS.PATH.VIDEOS}/1223`)
       .send({ title: 'title', author: 'title' })
       .expect(CodeResponsesEnum.NOT_FOUND)
 
-    const res = await req.get(SETTINGS.PATH.VIDEOS)
+    const res = await req.unAuthorizedRequest.get(SETTINGS.PATH.VIDEOS)
     expect(res.body[0]).toEqual(video1)
   })
 
   it('+ PUT product by ID with correct data', async () => {
     db.setDB(dataset1)
 
-    await req
+    await req.unAuthorizedRequest
       .put(`${SETTINGS.PATH.VIDEOS}/${video1.id}`)
       .send({
         title: 'some title updated',
@@ -70,7 +70,7 @@ describe('/videos', () => {
       })
       .expect(CodeResponsesEnum.NO_CONTENT)
 
-    const res = await req.get(SETTINGS.PATH.VIDEOS)
+    const res = await req.unAuthorizedRequest.get(SETTINGS.PATH.VIDEOS)
     expect(res.body[0]).toEqual({
       ...video1,
       title: 'some title updated',
@@ -83,17 +83,17 @@ describe('/videos', () => {
   })
 
   it('- DELETE product by incorrect ID', async () => {
-    db.clear()
+    db.clearAll()
     db.setDB({ videos: { [video1.id]: video1 }})
-    await req.delete(`${SETTINGS.PATH.VIDEOS}/12232121`).expect(CodeResponsesEnum.NOT_FOUND)
+    await req.unAuthorizedRequest.delete(`${SETTINGS.PATH.VIDEOS}/12232121`).expect(CodeResponsesEnum.NOT_FOUND)
 
-    const res = await req.get('/videos/')
+    const res = await req.unAuthorizedRequest.get('/videos/')
     expect(res.body[0]).toEqual(video1)
   })
   it('+ DELETE product by correct ID, auth', async () => {
-    await req.delete(`${SETTINGS.PATH.VIDEOS}/${video1.id}`).expect(CodeResponsesEnum.NO_CONTENT)
+    await req.unAuthorizedRequest.delete(`${SETTINGS.PATH.VIDEOS}/${video1.id}`).expect(CodeResponsesEnum.NO_CONTENT)
 
-    const res = await req.get('/videos/')
+    const res = await req.unAuthorizedRequest.get('/videos/')
     expect(res.body.length).toBe(0)
   })
 })

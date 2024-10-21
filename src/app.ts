@@ -17,7 +17,7 @@ app.get(SETTINGS.PATH.ROOT, (_, res) => {
 })
 
 app.delete(SETTINGS.PATH.CLEAR_ALL_DATA, (_, res) => {
-  db.clear()
+  db.clearAll()
   res.status(CodeResponsesEnum.NO_CONTENT).send()
 })
 
