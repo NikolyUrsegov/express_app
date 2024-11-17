@@ -6,14 +6,14 @@ import { req } from './test-helpers'
 
 describe('authorization', () => {
   afterAll(() => {
-    db.clear()
+    db.clearAll()
   })
 
   it('should be authorized', async () => {
     const buff2 = Buffer.from(ADMIN_AUTH, 'utf8')
     const codedAuth = buff2.toString('base64')
 
-    const res = await req
+    const res = await req.unAuthorizedRequest
       .post(`${SETTINGS.PATH.BLOGS}`)
       .set({ Authorization: 'Basic ' + codedAuth })
       .send({
@@ -24,7 +24,7 @@ describe('authorization', () => {
     expect(Object.keys(res.body).length).toBe(4)
   })
   it('should not authorized', async () => {
-    const res = await req
+    const res = await req.unAuthorizedRequest
       .post(SETTINGS.PATH.BLOGS)
       .send({
         name: 'string', description: 'string', websiteUrl: 'https://test.ru'
