@@ -2,11 +2,12 @@ import express from 'express'
 import cors from 'cors'
 import { SETTINGS } from './settings'
 import { videosRouter } from './videos/controller'
-import { db } from './db/db'
 import { CodeResponsesEnum } from './common/constants'
 import { blogsRouter } from './blogs/controller'
 import { errorHandlerMiddleware } from './base-middlewares/errors'
 import { postsRouter } from './posts/controller'
+import { PostsRepository } from './posts/repository'
+import { BlogsRepository } from './blogs/repository'
 
 export const app = express()
 app.use(express.json())
@@ -16,8 +17,8 @@ app.get(SETTINGS.PATH.ROOT, (_, res) => {
   res.status(200).json({ version: '1.0' })
 })
 
-app.delete(SETTINGS.PATH.CLEAR_ALL_DATA, (_, res) => {
-  db.clear()
+app.delete(SETTINGS.PATH.CLEAR_ALL_DATA, async (_, res) => {
+  await Promise.all([PostsRepository.deleteAll(), BlogsRepository.deleteAll()])
   res.status(CodeResponsesEnum.NO_CONTENT).send()
 })
 

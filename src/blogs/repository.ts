@@ -1,42 +1,50 @@
-import { db, Entities } from '../db/db'
+import { MongoCollection } from '../db/db'
 import { v1 as uuidv1 } from 'uuid'
 
-import type { DBType } from '../db/db'
-import type { IBlogModel } from './types'
+import type { BlogReqBody, IBlogModel } from './types'
+import { blogCollection } from '../db/mongo-db'
+import { createDateToIsoString } from '../common/helpers'
+import type { Collection } from 'mongodb'
 
-class Repository extends Entities<DBType['blogs']> {
-  constructor(db: DBType) {
-    super(db.blogs)
+class Repository extends MongoCollection<IBlogModel> {
+  constructor(blogCollection: Collection<IBlogModel>) {
+    super(blogCollection)
   }
 
-  public getBlogs() {
-    return Object.values(this.entities)
+  public async getBlogs() {
+    return await this.collection.find({}, { projection: { _id: 0 }}).toArray()
   }
 
-  public createBlog(blog: Omit<IBlogModel, 'id'>): IBlogModel {
+  public async createBlog(blog: BlogReqBody): Promise<IBlogModel> {
     const id = uuidv1()
-    const newBlog = { ...blog, id }
-
-    this.entities[id] = newBlog
+    const createdAt = createDateToIsoString()
+    const newBlog: IBlogModel = {
+      ...blog, createdAt, id, isMembership: false
+    }
+    await blogCollection.insertOne({ ...newBlog })
 
     return newBlog
   }
 
-  public getBlog(id: string): IBlogModel {
-    return this.entities[id]
+  public async getBlog(id: string): Promise<IBlogModel | null> {
+    return await this.collection.findOne({ id }, { projection: { _id: 0 }})
   }
 
-  public changeBlog(blog: IBlogModel): void {
-    this.entities[blog.id] = blog
+  public async changeBlog(blog: BlogReqBody, id: string): Promise<void> {
+    await this.collection.findOneAndUpdate({ id }, { $set: blog }, { upsert: false })
   }
 
-  public deleteBlog(id: string): void {
-    delete this.entities[id]
+  public async deleteBlog(id: string): Promise<void> {
+    await this.collection.deleteOne({ id })
   }
 
-  public hasBlog(id: string): boolean {
-    return Boolean(this.entities[id])
+  public async deleteAll(): Promise<void> {
+    await this.collection.drop()
+  }
+
+  public async hasBlog(id: string): Promise<boolean> {
+    return await this.hasEntity({ id })
   }
 }
 
-export const BlogsRepository = new Repository(db)
+export const BlogsRepository = new Repository(blogCollection)

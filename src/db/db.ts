@@ -1,3 +1,4 @@
+import type { Collection, Filter, Document } from 'mongodb'
 import type { IBlogModel } from '../blogs/types'
 import type { IPostModel } from '../posts/types'
 import type { IVideo } from '../videos/types'
@@ -49,5 +50,17 @@ export class Entities<T extends Record<string, unknown>> {
 
   hasEntity(id: string) {
     return Boolean(this.entities[id])
+  }
+}
+
+export class MongoCollection<T extends Document = Document> {
+  protected collection: Collection<T>
+
+  constructor(entities: Collection<T>) {
+    this.collection = entities
+  }
+
+  async hasEntity(filter: Filter<T>) {
+    return Boolean(await this.collection.findOne(filter))
   }
 }

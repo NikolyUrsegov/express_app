@@ -1,8 +1,9 @@
 import type { NextFunction, Request, Response } from 'express'
-import { body } from 'express-validator'
+import type { Document, Filter } from 'mongodb'
+import { body, matchedData } from 'express-validator'
 import type { MinMaxOptions } from 'express-validator/lib/options'
 import { CodeResponsesEnum } from '../common/constants'
-import type { Entities } from '../db/db'
+import type { Entities, MongoCollection } from '../db/db'
 import { CustomError, handlerErrors } from './custom-error'
 
 export const stringRequiredValidator = (field: string, options: MinMaxOptions) =>
@@ -12,6 +13,14 @@ export const stringRequiredValidator = (field: string, options: MinMaxOptions) =
     .trim()
     .isLength(options)
     .withMessage(`more then ${options.min ?? 0} or ${options.max}`)
+
+export const isDateValidator = (field: string) =>
+  body(field)
+    .isISO8601()
+
+export const isBooleanValidator = (field: string) =>
+  body(field)
+    .isBoolean()
 
 export const regexValidator = (field: string, pattern: RegExp | string, options: MinMaxOptions) =>
   body(field)
@@ -35,6 +44,21 @@ export const hasEntityByIdParamValidator =
       next()
     }
 
+export const hasEntityByIdParamValidatorMongo =
+  <R extends Document, K extends keyof R>(param: K, repository: MongoCollection<R>) =>
+    async (req: Request<Record<string, string>>, _res: Response, next: NextFunction) => {
+      const id = req.params[param as string]
+      const entityExists = await repository.hasEntity({ [param]: id } as Filter<R>)
+
+      if (!entityExists) {
+        const error = new CustomError('Not found', { status: CodeResponsesEnum.NOT_FOUND })
+
+        return next(error)
+      }
+
+      next()
+    }
+
 export const validationErrorHandler = (req: Request, _res: Response, next: NextFunction) => {
   const errorsFields = handlerErrors(req)
 
@@ -46,5 +70,10 @@ export const validationErrorHandler = (req: Request, _res: Response, next: NextF
 
     return next(error)
   }
+  next()
+}
+
+export const matchedDataHandler = (req: Request, _res: Response, next: NextFunction) => {
+  req.body = matchedData(req)
   next()
 }

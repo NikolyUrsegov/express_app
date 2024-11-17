@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import type { Request, Response } from 'express'
 import { CodeResponsesEnum } from '../common/constants'
-import type { IBlogModel } from './types'
+import type { BlogReqBody, IBlogModel } from './types'
 import { BlogsRepository } from './repository'
 import {
   changeBlogMiddlewares,
@@ -13,30 +13,30 @@ import {
 export const blogsRouter = Router()
 
 const blogsControllers = {
-  get: (_: Request, res: Response<IBlogModel[]>) => {
-    res.status(CodeResponsesEnum.OK).send(BlogsRepository.getBlogs())
+  get: async (_: Request, res: Response<IBlogModel[]>) => {
+    res.status(CodeResponsesEnum.OK).send( await BlogsRepository.getBlogs())
   },
-  post: (req: Request<any, any, Omit<IBlogModel, 'id'>>, res: Response<IBlogModel>) => {
-    const blog = BlogsRepository.createBlog(req.body)
+  post: async (req: Request<any, any, BlogReqBody>, res: Response<IBlogModel>) => {
+    const blog = await BlogsRepository.createBlog(req.body)
 
     res.status(CodeResponsesEnum.CREATED).send(blog)
   },
-  getBlog: (req: Request<{ id: string }>, res: Response<IBlogModel>) => {
+  getBlog: async (req: Request<{ id: string }>, res: Response<IBlogModel | null>) => {
     const { id } = req.params
 
-    res.status(CodeResponsesEnum.OK).json(BlogsRepository.getBlog(id))
+    res.status(CodeResponsesEnum.OK).json(await BlogsRepository.getBlog(id))
   },
-  putBlog: (req: Request<{ id: string }, any, Omit<IBlogModel, 'id'>>, res: Response<void>) => {
+  putBlog: async (req: Request<{ id: string }, any, BlogReqBody>, res: Response<void>) => {
     const { id } = req.params
 
-    BlogsRepository.changeBlog({ ...req.body, id })
+    await BlogsRepository.changeBlog(req.body, id )
 
     res.status(CodeResponsesEnum.NO_CONTENT).send()
   },
-  deleteBlog: (req: Request<{ id: string }>, res: Response<void>) => {
+  deleteBlog: async (req: Request<{ id: string }>, res: Response<void>) => {
     const { id } = req.params
 
-    BlogsRepository.deleteBlog(id)
+    await BlogsRepository.deleteBlog(id)
 
     res.status(CodeResponsesEnum.NO_CONTENT).send()
   }

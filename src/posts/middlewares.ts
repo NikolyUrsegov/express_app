@@ -3,15 +3,15 @@ import { PostsRepository } from './repository'
 import { body, checkExact } from 'express-validator'
 import { BlogsRepository } from '../blogs/repository'
 import {
-  hasEntityByIdParamValidator,
+  hasEntityByIdParamValidatorMongo,
   stringRequiredValidator,
   validationErrorHandler
 } from '../common/validators'
 
-export const isPostCustomValidator = hasEntityByIdParamValidator('id', PostsRepository)
+export const isPostCustomValidator = hasEntityByIdParamValidatorMongo('id', PostsRepository)
 
-export const isBlogValidator = body('blogId').custom((id: string) => {
-  const blogExists = BlogsRepository.hasBlog(id)
+export const isBlogValidator = body('blogId').custom(async (id: string) => {
+  const blogExists = await BlogsRepository.hasBlog(id)
   if (!blogExists) {
     throw new Error('BlogId is not found')
   }

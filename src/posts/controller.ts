@@ -10,34 +10,35 @@ import {
   deletePostMiddlewares,
   getPostMiddlewares
 } from './middlewares'
+import type { IBlogModel } from '../blogs/types'
 
 export const postsRouter = Router()
 
 const postsControllers = {
-  get: (_: Request, res: Response<IPostModel[]>) => {
-    res.status(CodeResponsesEnum.OK).send(PostsRepository.getPostsList())
+  get: async (_: Request, res: Response<IPostModel[]>) => {
+    res.status(CodeResponsesEnum.OK).send(await PostsRepository.getPostsList())
   },
-  post: (
+  post: async (
     req: Request<any, any, Omit<IPostModel, 'blogName' | 'id'>>,
     res: Response<IPostModel>
   ) => {
-    const blog = BlogsRepository.getBlog(req.body.blogId)
-    const post = PostsRepository.createPost(req.body, blog)
+    const blog = await BlogsRepository.getBlog(req.body.blogId)
+    const post = await PostsRepository.createPost(req.body, blog as IBlogModel)
 
     res.status(CodeResponsesEnum.CREATED).send(post)
   },
-  getPost: (req: Request<{ id: string }>, res: Response<IPostModel>) => {
+  getPost: async(req: Request<{ id: string }>, res: Response<IPostModel>) => {
     const { id } = req.params
 
-    res.status(CodeResponsesEnum.OK).json(PostsRepository.getPost(id))
+    res.status(CodeResponsesEnum.OK).json(await PostsRepository.getPost(id) as IPostModel)
   },
-  putPost: (
+  putPost: async(
     req: Request<{ id: string }, any, Omit<IPostModel, 'blogName' | 'id'>>,
     res: Response<void>
   ) => {
     const { id } = req.params
 
-    PostsRepository.changePost({ ...req.body, id })
+    await PostsRepository.changePost({ ...req.body, id })
 
     res.status(CodeResponsesEnum.NO_CONTENT).send()
   },
