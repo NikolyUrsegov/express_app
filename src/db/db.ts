@@ -1,20 +1,14 @@
+import type { Collection, Filter, Document } from 'mongodb'
 import type { IBlogModel } from '../blogs/types'
 import type { IPostModel } from '../posts/types'
 import type { IVideo } from '../videos/types'
 
-export type DBType = {
-  videos: Record<string, IVideo>
-  blogs: Record<string, IBlogModel>
-  posts: Record<string, IPostModel>
-  setDB: (dataset?: Partial<DBType>) => void
-  clear: () => void
-}
+export class DB {
+  public videos: Record<string, IVideo> = {}
+  public blogs: Record<string, IBlogModel> = {}
+  public posts: Record<string, IPostModel> = {}
 
-export const db: DBType = {
-  videos: {},
-  blogs: {},
-  posts: {},
-  setDB(dataset) {
+  public setDB(dataset?: Partial<DB>) {
     const { videos, blogs, posts } = dataset ?? {}
 
     if (videos) {
@@ -34,11 +28,30 @@ export const db: DBType = {
 
       return
     }
-  },
-  clear() {
+  }
+
+  public clearVideos() {
     this.videos = {}
   }
+
+  public clearBlogs() {
+    this.blogs = {}
+  }
+
+  public clearAll() {
+    for (const key in this) {
+      if (
+        typeof this[key as keyof DB] === 'object' &&
+        !Array.isArray(this[key as keyof DB]) &&
+        key !== 'prototype'
+      ) {
+        (this[key as keyof DB] as Record<string, unknown>) = {}
+      }
+    }
+  }
 }
+
+export const db = new DB()
 
 export class Entities<T extends Record<string, unknown>> {
   protected entities: T
@@ -49,5 +62,17 @@ export class Entities<T extends Record<string, unknown>> {
 
   hasEntity(id: string) {
     return Boolean(this.entities[id])
+  }
+}
+
+export class MongoCollection<T extends Document = Document> {
+  protected collection: Collection<T>
+
+  constructor(entities: Collection<T>) {
+    this.collection = entities
+  }
+
+  async hasEntity(filter: Filter<T>) {
+    return Boolean(await this.collection.findOne(filter))
   }
 }

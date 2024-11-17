@@ -6,9 +6,10 @@ export const ADMIN_AUTH = 'admin:qwerty'
 
 export const authMiddleware = (req: Request, _res: Response, next: NextFunction) => {
   const auth = req.headers['authorization'] as string
-
   if (!auth) {
     next(new CustomError('UNAUTHORIZED', { status: CodeResponsesEnum.UNAUTHORIZED }))
+
+    return
   }
 
   const buff2 = Buffer.from(ADMIN_AUTH, 'utf8')
@@ -18,6 +19,8 @@ export const authMiddleware = (req: Request, _res: Response, next: NextFunction)
 
   if (arrAuth[1] !== codedAuth || arrAuth[0] !== 'Basic') {
     next(new CustomError('UNAUTHORIZED', { status: CodeResponsesEnum.UNAUTHORIZED }))
+
+    return
   }
 
   next()

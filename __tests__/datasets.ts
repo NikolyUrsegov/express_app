@@ -1,4 +1,4 @@
-import type { DBType } from '../src/db/db'
+import type { DB } from '../src/db/db'
 import { createIdNumber } from '../src/common/helpers'
 import type { IVideo } from '../src/videos/types'
 import { AvailableResolutions } from '../src/videos/types'
@@ -16,7 +16,7 @@ export const video1: IVideo = {
   availableResolutions: [AvailableResolutions.P1080]
 }
 
-export const dataset1: Pick<DBType, 'videos'> = {
+export const dataset1: Pick<DB, 'videos'> = {
   videos: {
     [video1.id]: { ...video1 }
   }
