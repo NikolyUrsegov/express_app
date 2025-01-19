@@ -16,12 +16,18 @@ export const errorHandlerMiddleware = (
       statusCode === CodeResponsesEnum.UNAUTHORIZED
     ) {
       res.status(statusCode).send()
+
+      return
     }
 
     if (statusCode === CodeResponsesEnum.BAD_REQUEST) {
-      res.status(statusCode).send(err.body)
+      res.status(statusCode).json(err.body)
+
+      return
     }
     res.status(statusCode).send()
+
+    return
   }
-  res.status(CodeResponsesEnum.INTERNAL_SERVER_ERROR).send()
+  res.status(CodeResponsesEnum.INTERNAL_SERVER_ERROR).send({ error: 'Internal Server Error' })
 }
