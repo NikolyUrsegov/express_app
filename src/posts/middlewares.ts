@@ -4,6 +4,10 @@ import { body } from 'express-validator'
 import { BlogsRepository } from '../blogs/repository'
 import {
   hasEntityByIdParamValidatorMongo,
+  isIntQueryValidator,
+  isStringQueryValidator,
+  matchedDataQueryHandler,
+  sortDirectionValidator,
   stringRequiredValidator,
   validationErrorHandler
 } from '../common/validators'
@@ -41,3 +45,10 @@ export const changePostMiddlewares = [
 export const getPostMiddlewares = [isPostCustomValidator]
 
 export const deletePostMiddlewares = [authMiddleware, isPostCustomValidator]
+
+export const getPostsMiddlewares = [
+  isIntQueryValidator(['pageNumber', 'pageSize']),
+  isStringQueryValidator('sortBy'),
+  sortDirectionValidator,
+  matchedDataQueryHandler
+]
