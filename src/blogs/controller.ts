@@ -1,23 +1,25 @@
 import { Router } from 'express'
 import type { Request, Response } from 'express'
 import { CodeResponsesEnum } from '../common/constants'
-import type { BlogReqBody, IBlogModel } from './types'
+import type { BlogReqBody, IBlogModel, IBlogsPaginateQueryParameters, IBlogsPaginateResponse } from './types'
 import { BlogsRepository } from './repository'
 import {
   changeBlogMiddlewares,
   createBlogMiddlewares,
   deleteBlogMiddlewares,
-  getBlogMiddlewares
+  getBlogMiddlewares,
+  getBlogsMiddlewares
 } from './middlewares'
+import { BlogsService } from './service'
 
 export const blogsRouter = Router()
 
 const blogsControllers = {
-  get: async (_: Request, res: Response<IBlogModel[]>) => {
-    res.status(CodeResponsesEnum.OK).send( await BlogsRepository.getBlogs())
+  get: async ({ query }: Request<any, any, any, IBlogsPaginateQueryParameters>, res: Response<IBlogsPaginateResponse>) => {
+    res.status(CodeResponsesEnum.OK).send( await BlogsService.getBlogs(query))
   },
   post: async (req: Request<any, any, BlogReqBody>, res: Response<IBlogModel>) => {
-    const blog = await BlogsRepository.createBlog(req.body)
+    const blog = await BlogsService.createBlog(req.body)
 
     res.status(CodeResponsesEnum.CREATED).send(blog)
   },
@@ -42,7 +44,7 @@ const blogsControllers = {
   }
 }
 
-blogsRouter.get('/', blogsControllers.get)
+blogsRouter.get('/', ...getBlogsMiddlewares, blogsControllers.get)
 blogsRouter.post('/', ...createBlogMiddlewares, blogsControllers.post)
 blogsRouter.get('/:id', ...getBlogMiddlewares, blogsControllers.getBlog)
 blogsRouter.put('/:id', ...changeBlogMiddlewares, blogsControllers.putBlog)
