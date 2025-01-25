@@ -1,9 +1,9 @@
 import { MongoCollection } from '../db/db'
 
 import type { IPostModel, IPostsPaginateQueryParameters } from './types'
-import type { Collection } from 'mongodb'
+import type { Collection, Filter } from 'mongodb'
 import { postCollection } from '../db/mongo-db'
-import type { PartialExcept } from '../types'
+import type { PartialExcept, RequiredExcept } from '../types'
 
 class Repository extends MongoCollection<IPostModel> {
 
@@ -11,7 +11,20 @@ class Repository extends MongoCollection<IPostModel> {
     super(postCollection)
   }
 
-  public async getPosts(query: Required<IPostsPaginateQueryParameters>) {
+  private createFilter(query: Partial<Record<string, unknown>>) {
+    const {
+      blogId
+    } = query
+    const filter: Filter<IPostModel> = {}
+
+    if(blogId){
+      filter.blogId = blogId
+    }
+
+    return filter
+  }
+
+  public async getPosts(query: RequiredExcept<IPostsPaginateQueryParameters, 'blogId'>) {
     const {
       pageNumber,
       pageSize,
@@ -20,7 +33,7 @@ class Repository extends MongoCollection<IPostModel> {
     } = query
 
     return await this.collection
-      .find({}, { projection: { _id: 0 }})
+      .find(this.createFilter(query), { projection: { _id: 0 }})
       .sort(sortBy, sortDirection)
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
@@ -47,8 +60,8 @@ class Repository extends MongoCollection<IPostModel> {
     await this.collection.drop()
   }
 
-  public async countPost(){
-    return await this.countDocuments({})
+  public async countPost(query: Partial<Record<string, unknown>> = {}){
+    return await this.countDocuments(this.createFilter(query))
   }
 }
 

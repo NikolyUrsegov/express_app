@@ -14,4 +14,4 @@ export type IInputPostModel = Omit<IPostModel, 'blogName' | 'id' | 'createdAt'>
 export type IInputPutModel = Omit<IPostModel, 'blogName' | 'createdAt'>
 export type IPostPaginateResponse = IPaginateResponse<IPostModel>
 
-export type IPostsPaginateQueryParameters = IPaginateQueryParameters
+export type IPostsPaginateQueryParameters = IPaginateQueryParameters & Partial<Pick<IPostModel, 'blogId'>>

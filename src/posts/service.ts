@@ -7,10 +7,10 @@ import type { IBlogModel } from "../blogs/types"
 import { createDateToIsoString } from "../common/helpers"
 
 export class PostsService  {
-  static async getPosts(query: IPostsPaginateQueryParameters): Promise<IPostPaginateResponse> {
+  static async getPosts({ blogId, ...query }: IPostsPaginateQueryParameters): Promise<IPostPaginateResponse> {
     const { getParameters, createResponsePaginate } = new Paginate(query)
     const parametersPaginate = getParameters()
-    const [items, totalCount] = await Promise.all([PostsRepository.getPosts(parametersPaginate), PostsRepository.countPost()])
+    const [items, totalCount] = await Promise.all([PostsRepository.getPosts({ blogId, ...parametersPaginate }), PostsRepository.countPost({ blogId })])
 
     return createResponsePaginate({ totalCount, items })
   }

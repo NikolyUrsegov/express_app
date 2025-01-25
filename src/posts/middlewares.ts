@@ -23,12 +23,16 @@ export const isBlogValidator = body('blogId').custom(async (id: string) => {
   return true
 })
 
+export const validateRequiredPostBody = [
+  stringRequiredValidator('title', { min: 1, max: 30 }),
+  stringRequiredValidator('shortDescription', { min: 1, max: 100 }),
+  stringRequiredValidator('content', { min: 1, max: 1000 })
+]
+
 export const createPostMiddlewares = [
   authMiddleware,
   isBlogValidator,
-  stringRequiredValidator('title', { min: 1, max: 30 }),
-  stringRequiredValidator('shortDescription', { min: 1, max: 100 }),
-  stringRequiredValidator('content', { min: 1, max: 1000 }),
+  ...validateRequiredPostBody,
   validationErrorHandler
 ]
 
@@ -36,9 +40,7 @@ export const changePostMiddlewares = [
   authMiddleware,
   isPostCustomValidator,
   isBlogValidator,
-  stringRequiredValidator('title', { min: 1, max: 30 }),
-  stringRequiredValidator('shortDescription', { min: 1, max: 100 }),
-  stringRequiredValidator('content', { min: 1, max: 1000 }),
+  ...validateRequiredPostBody,
   validationErrorHandler
 ]
 

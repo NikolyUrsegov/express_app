@@ -5,11 +5,13 @@ import {
   isIntQueryValidator,
   isStringQueryValidator,
   matchedDataHandler,
+  matchedDataQueryHandler,
   regexValidator,
   sortDirectionValidator,
   stringRequiredValidator,
   validationErrorHandler
 } from '../common/validators'
+import { validateRequiredPostBody } from '../posts/middlewares'
 import { BlogsRepository } from './repository'
 
 export const idBlogCustomValidator = hasEntityByIdParamValidatorMongo('id', BlogsRepository)
@@ -34,6 +36,22 @@ export const changeBlogMiddlewares = [
 ]
 
 export const getBlogMiddlewares = [idBlogCustomValidator]
+
+export const getPostsByBlogMiddlewares = [
+  isIntQueryValidator(['pageNumber', 'pageSize']),
+  isStringQueryValidator(['sortBy']),
+  sortDirectionValidator,
+  idBlogCustomValidator,
+  matchedDataQueryHandler
+]
+
+export const createPostByBlogIdMiddlewares = [
+  authMiddleware,
+  idBlogCustomValidator,
+  ...validateRequiredPostBody,
+  validationErrorHandler,
+  matchedDataHandler
+]
 
 export const deleteBlogMiddlewares = [authMiddleware, idBlogCustomValidator]
 
