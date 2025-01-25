@@ -30,7 +30,7 @@ const blogsControllers = {
     res.status(CodeResponsesEnum.OK).send( await BlogsService.getPostsByBlogId(params, query))
   },
   createPostByBlogId: async ({ body, params }: Request<{ id: string }, any, Omit<IInputPostModel, 'blogId'>, any>, res: Response<IPostModel>) => {
-    res.status(CodeResponsesEnum.OK).send( await BlogsService.createPostByBlogId(params, body))
+    res.status(CodeResponsesEnum.CREATED).send( await BlogsService.createPostByBlogId(params, body))
   },
   getBlog: async ({ params }: Request<{ id: string }>, res: Response<IBlogModel | null>) => {
     res.status(CodeResponsesEnum.OK).json(await BlogsService.getBlog(params))

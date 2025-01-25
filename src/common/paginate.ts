@@ -38,7 +38,7 @@ export class Paginate<
     return {
       pagesCount: Math.ceil(totalCount / this.pageSize),
       page: this.pageNumber,
-      pageSize: items.length,
+      pageSize: this.pageSize,
       totalCount,
       items
     }
