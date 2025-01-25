@@ -75,4 +75,8 @@ export class MongoCollection<T extends Document = Document> {
   async hasEntity(filter: Filter<T>) {
     return Boolean(await this.collection.findOne(filter))
   }
+
+  async countDocuments(filter: Filter<T>) {
+    return await this.collection.countDocuments(filter)
+  }
 }

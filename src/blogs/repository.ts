@@ -1,26 +1,46 @@
 import { MongoCollection } from '../db/db'
-import { v1 as uuidv1 } from 'uuid'
 
 import type { BlogReqBody, IBlogModel } from './types'
 import { blogCollection } from '../db/mongo-db'
-import { createDateToIsoString } from '../common/helpers'
-import type { Collection } from 'mongodb'
+import type { Collection, Filter } from 'mongodb'
+import type { IBlogsPaginateQueryParameters } from './types'
+import type { RequiredExcept } from '../types'
 
 class Repository extends MongoCollection<IBlogModel> {
   constructor(blogCollectionTest: () => Collection<IBlogModel>) {
     super(blogCollectionTest())
   }
 
-  public async getBlogs() {
-    return await this.collection.find({}, { projection: { _id: 0 }}).toArray()
+  private createFilter(query: RequiredExcept<IBlogsPaginateQueryParameters, 'searchNameTerm'>) {
+    const {
+      searchNameTerm
+    } = query
+    const filter: Filter<IBlogModel> = {}
+
+    if(searchNameTerm){
+      filter.name = { $regex: searchNameTerm, $options: 'i' }
+    }
+
+    return filter
   }
 
-  public async createBlog(blog: BlogReqBody): Promise<IBlogModel> {
-    const id = uuidv1()
-    const createdAt = createDateToIsoString()
-    const newBlog: IBlogModel = {
-      ...blog, createdAt, id, isMembership: false
-    }
+  public async getBlogs(query: RequiredExcept<IBlogsPaginateQueryParameters, 'searchNameTerm'>) {
+    const {
+      sortBy,
+      sortDirection,
+      pageSize,
+      pageNumber
+    } = query
+
+    return await this.collection
+      .find(this.createFilter(query), { projection: { _id: 0 }})
+      .sort(sortBy, sortDirection)
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize)
+      .toArray()
+  }
+
+  public async createBlog(newBlog: IBlogModel): Promise<IBlogModel> {
     await this.collection.insertOne({ ...newBlog })
 
     return newBlog
@@ -44,6 +64,10 @@ class Repository extends MongoCollection<IBlogModel> {
 
   public async hasBlog(id: string): Promise<boolean> {
     return await this.hasEntity({ id })
+  }
+
+  public async countBlogs(query: RequiredExcept<IBlogsPaginateQueryParameters, 'searchNameTerm'>) {
+    return this.countDocuments(this.createFilter(query))
   }
 }
 

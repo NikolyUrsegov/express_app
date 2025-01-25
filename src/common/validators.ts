@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express'
 import type { Document, Filter } from 'mongodb'
-import { body, matchedData } from 'express-validator'
+import { body, matchedData, query } from 'express-validator'
 import type { MinMaxOptions } from 'express-validator/lib/options'
 import { CodeResponsesEnum } from '../common/constants'
 import type { Entities, MongoCollection } from '../db/db'
@@ -77,3 +77,25 @@ export const matchedDataHandler = (req: Request, _res: Response, next: NextFunct
   req.body = matchedData(req)
   next()
 }
+
+export const matchedDataQueryHandler = (req: Request, _res: Response, next: NextFunction) => {
+  req.query = matchedData(req, { onlyValidData: true })
+  next()
+}
+
+export const isIntQueryValidator = (...args: Parameters<typeof query>) =>
+  query(...args)
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage((_, { path }) => `${path} must be a positive integer`)
+    .toInt()
+
+export const isStringQueryValidator = (...args: Parameters<typeof query>) =>
+  query(...args)
+    .optional()
+    .isString()
+    .withMessage((_, { path }) => `${path} must be a positive string`)
+
+export const sortDirectionValidator = query('sortDirection')
+  .optional()
+  .isIn(['asc', 'desc'])

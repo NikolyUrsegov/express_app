@@ -1,12 +1,9 @@
 import { MongoCollection } from '../db/db'
-import { v1 as uuidv1 } from 'uuid'
 
-import type { IPostModel } from './types'
-import type { IBlogModel } from '../blogs/types'
-import type { Collection } from 'mongodb'
+import type { IPostModel, IPostsPaginateQueryParameters } from './types'
+import type { Collection, Filter } from 'mongodb'
 import { postCollection } from '../db/mongo-db'
-import { createDateToIsoString } from '../common/helpers'
-import { BlogsRepository } from '../blogs/repository'
+import type { PartialExcept, RequiredExcept } from '../types'
 
 class Repository extends MongoCollection<IPostModel> {
 
@@ -14,48 +11,57 @@ class Repository extends MongoCollection<IPostModel> {
     super(postCollection)
   }
 
-  public async getPostsList() {
-    return await this.collection.find({}, { projection: { _id: 0 }}).toArray()
-  }
-  public async createPost(
-    post: Omit<IPostModel, 'blogName' | 'id'>,
-    { name: blogName }: IBlogModel
-  ): Promise<IPostModel> {
-    const id = uuidv1()
-    const newPost: IPostModel = {
-      ...post, id, blogName, createdAt: createDateToIsoString()
+  private createFilter(query: Partial<Record<string, unknown>>) {
+    const {
+      blogId
+    } = query
+    const filter: Filter<IPostModel> = {}
+
+    if(blogId){
+      filter.blogId = blogId
     }
 
-    this.collection.insertOne({ ...newPost })
+    return filter
+  }
 
-    return newPost
+  public async getPosts(query: RequiredExcept<IPostsPaginateQueryParameters, 'blogId'>) {
+    const {
+      pageNumber,
+      pageSize,
+      sortBy,
+      sortDirection
+    } = query
+
+    return await this.collection
+      .find(this.createFilter(query), { projection: { _id: 0 }})
+      .sort(sortBy, sortDirection)
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize)
+      .toArray()
+  }
+  public async createPost(post: IPostModel): Promise<IPostModel> {
+    await this.collection.insertOne(post, { forceServerObjectId: true })
+
+    return post
   }
   public async getPost(id: string) {
     return await this.collection.findOne({ id }, { projection: { _id: 0 }})
   }
 
-  public async changePost(post: Omit<IPostModel, 'blogName'>) {
-    const prevPost = await this.getPost(post.id) as IPostModel
-
-    if (post.blogId === prevPost.blogId) {
-      await this.collection.updateOne({ id: post.id  }, { $set: { ...prevPost, ...post }})
-
-      return
-    }
-
-    const { id: blogName } = await BlogsRepository.getBlog(post.blogId) as IBlogModel
-
-    await this.collection.updateOne({ id: post.id }, { $set: {
-      ...prevPost, ...post, blogName
-    }})
+  public async changePost(post: PartialExcept<IPostModel, 'id'>) {
+    await this.collection.updateOne({ id: post.id }, { $set: post })
   }
 
-  public deletePost(id: string) {
-    this.collection.deleteOne({ id })
+  public async deletePost(id: string) {
+    await this.collection.deleteOne({ id })
   }
 
   public async deleteAll(){
     await this.collection.drop()
+  }
+
+  public async countPost(query: Partial<Record<string, unknown>> = {}){
+    return await this.countDocuments(this.createFilter(query))
   }
 }
 

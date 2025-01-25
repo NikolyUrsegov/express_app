@@ -1,57 +1,55 @@
 import { Router } from 'express'
-import type { Request, Response } from 'express'
+import type { NextFunction, Request, Response } from 'express'
 import { CodeResponsesEnum } from '../common/constants'
-import type { IPostModel } from './types'
-import { PostsRepository } from './repository'
-import { BlogsRepository } from '../blogs/repository'
+import type { IInputPostModel, IInputPutModel, IPostModel, IPostPaginateResponse, IPostsPaginateQueryParameters } from './types'
 import {
   changePostMiddlewares,
   createPostMiddlewares,
   deletePostMiddlewares,
-  getPostMiddlewares
+  getPostMiddlewares,
+  getPostsMiddlewares
 } from './middlewares'
-import type { IBlogModel } from '../blogs/types'
+import { PostsService } from './service'
 
 export const postsRouter = Router()
 
 const postsControllers = {
-  get: async (_: Request, res: Response<IPostModel[]>) => {
-    res.status(CodeResponsesEnum.OK).send(await PostsRepository.getPostsList())
+  get: async ({ query }: Request<any, any, any, IPostsPaginateQueryParameters>, res: Response<IPostPaginateResponse>) => {
+    res.status(CodeResponsesEnum.OK).send(await PostsService.getPosts(query))
   },
   post: async (
-    req: Request<any, any, Omit<IPostModel, 'blogName' | 'id'>>,
-    res: Response<IPostModel>
+    req: Request<any, any, IInputPostModel>,
+    res: Response<IPostModel>,
+    next: NextFunction
   ) => {
-    const blog = await BlogsRepository.getBlog(req.body.blogId)
-    const post = await PostsRepository.createPost(req.body, blog as IBlogModel)
-
-    res.status(CodeResponsesEnum.CREATED).send(post)
+    try{
+      const post = await PostsService.createPost(req.body)
+      res.status(CodeResponsesEnum.CREATED).send(post)
+    } catch(_err){
+      next(new Error())
+    }
   },
-  getPost: async(req: Request<{ id: string }>, res: Response<IPostModel>) => {
-    const { id } = req.params
-
-    res.status(CodeResponsesEnum.OK).json(await PostsRepository.getPost(id) as IPostModel)
+  getPost: async (req: Request<{ id: string }>, res: Response<IPostModel>) => {
+    res.status(CodeResponsesEnum.OK).json(await PostsService.getPost(req.params) as IPostModel )
   },
-  putPost: async(
-    req: Request<{ id: string }, any, Omit<IPostModel, 'blogName' | 'id'>>,
+  putPost: async (
+    req: Request<{ id: string }, any, IInputPutModel>,
     res: Response<void>
   ) => {
-    const { id } = req.params
+    const { body,  params } = req
 
-    await PostsRepository.changePost({ ...req.body, id })
+    await PostsService.changePost(body, params)
 
     res.status(CodeResponsesEnum.NO_CONTENT).send()
   },
-  deletePost: (req: Request<{ id: string }>, res: Response<void>) => {
-    const { id } = req.params
-
-    PostsRepository.deletePost(id)
+  deletePost: async (req: Request<{ id: string }>, res: Response<void>) => {
+    await PostsService.deletePost(req.params)
 
     res.status(CodeResponsesEnum.NO_CONTENT).send()
   }
 }
 
-postsRouter.get('/', postsControllers.get)
+postsRouter.get('/', ...getPostsMiddlewares, postsControllers.get)
 postsRouter.post('/', ...createPostMiddlewares, postsControllers.post)
 postsRouter.get('/:id', ...getPostMiddlewares, postsControllers.getPost)
 postsRouter.put('/:id', ...changePostMiddlewares, postsControllers.putPost)

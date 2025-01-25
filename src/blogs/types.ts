@@ -1,3 +1,5 @@
+import type { IPaginateResponse, IPaginateQueryParameters } from "../common/types"
+
 export interface IBlogModel {
   id: string
   name: string
@@ -8,3 +10,10 @@ export interface IBlogModel {
 }
 
 export type BlogReqBody = Pick<IBlogModel, 'name' | 'description' | 'websiteUrl'>
+
+export type IBlogsPaginateResponse = IPaginateResponse<IBlogModel>
+
+export interface IBlogsPaginateQueryParameters extends IPaginateQueryParameters{
+  searchNameTerm?: string | null
+}
+
